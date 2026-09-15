@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="NOVA — kundalik uslub uchun zamonaviy kiyimlar do‘koni." />
+    <meta name="theme-color" content="#080a0f" />
+    <title>NOVA — yangi uslub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="announcement">500 000 so‘mdan yuqori buyurtmalarga bepul yetkazib berish</div>
+    <header class="site-header">
+      <a class="logo" href="#top" aria-label="NOVA bosh sahifa">NO<span>V</span>A</a>
+      <nav class="desktop-nav" aria-label="Asosiy menyu">
+        <a href="#new">Yangi</a>
+        <a href="#collection">Kolleksiya</a>
+        <a href="#about">Biz haqimizda</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn search-toggle" type="button" aria-label="Qidiruvni ochish">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+        </button>
+        <button class="cart-btn" type="button" aria-label="Savatni ochish">
+          <span>Savat</span><b class="cart-count">0</b>
+        </button>
+        <button class="menu-btn" type="button" aria-label="Menyuni ochish" aria-expanded="false">
+          <span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="search-panel" aria-hidden="true">
+      <label for="search">Mahsulot qidiring</label>
+      <div class="search-row">
+        <input id="search" type="search" placeholder="Masalan, sviter" autocomplete="off" />
+        <button class="search-close" type="button">Yopish</button>
+      </div>
+    </div>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <img src="assets/hero.png" alt="NOVA yangi kolleksiyasidagi zamonaviy kiyimlar" />
+        <div class="hero-shade"></div>
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> Kuz · Qish 2026</p>
+          <h1 id="hero-title">Uslubing.<br /><em>Qoidalaring.</em></h1>
+          <p>Har kuni o‘zingizga mos, erkin va ishonchli obraz yarating.</p>
+          <a class="primary-btn" href="#new">Kolleksiyani ko‘rish <span>↗</span></a>
+        </div>
+        <div class="hero-note">
+          <span>01</span>
+          <p>Yangi mavsum<br />Asosiy kolleksiya</p>
+        </div>
+      </section>
+
+      <section class="marquee" aria-label="Do‘kon afzalliklari">
+        <div>
+          <span>Yangi kolleksiya</span><i>✦</i><span>Qulay bichim</span><i>✦</i><span>Tez yetkazib berish</span><i>✦</i><span>Oson almashtirish</span><i>✦</i>
+          <span>Yangi kolleksiya</span><i>✦</i><span>Qulay bichim</span><i>✦</i><span>Tez yetkazib berish</span><i>✦</i><span>Oson almashtirish</span><i>✦</i>
+        </div>
+      </section>
+
+      <section class="products-section" id="new">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow dark"><span></span> Hozir trendda</p>
+            <h2>Yangi kelganlar</h2>
+          </div>
+          <div class="filters" role="group" aria-label="Mahsulot turi">
+            <button class="active" data-filter="all">Barchasi</button>
+            <button data-filter="ustki">Ustki kiyim</button>
+            <button data-filter="kundalik">Kundalik</button>
+          </div>
+        </div>
+
+        <div class="product-grid" id="product-grid">
+          <article class="product-card" data-category="ustki" data-name="Qora overshirt">
+            <button class="wish" type="button" aria-label="Qora overshirtni sevimlilarga qo‘shish">♡</button>
+            <div class="product-image p1" role="img" aria-label="Qora overshirt"></div>
+            <div class="product-info"><div><h3>Qora overshirt</h3><p>Qalin paxta · Uniseks</p></div><strong>449 000 so‘m</strong></div>
+            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
+          </article>
+          <article class="product-card" data-category="kundalik" data-name="Krem sviter">
+            <span class="tag">Yangi</span><button class="wish" type="button" aria-label="Krem sviterni sevimlilarga qo‘shish">♡</button>
+            <div class="product-image p2" role="img" aria-label="Krem rangli to‘qima sviter"></div>
+            <div class="product-info"><div><h3>Krem sviter</h3><p>Yumshoq trikotaj</p></div><strong>329 000 so‘m</strong></div>
+            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
+          </article>
+          <article class="product-card" data-category="kundalik" data-name="Ko‘k hudi">
+            <span class="tag blue">Top</span><button class="wish" type="button" aria-label="Ko‘k hudini sevimlilarga qo‘shish">♡</button>
+            <div class="product-image p3" role="img" aria-label="Ko‘k rangli hudi"></div>
+            <div class="product-info"><div><h3>Ko‘k hudi</h3><p>Og‘ir futer · Oversize</p></div><strong>389 000 so‘m</strong></div>
+            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
+          </article>
+          <article class="product-card" data-category="kundalik" data-name="Keng shim">
+            <button class="wish" type="button" aria-label="Keng shimni sevimlilarga qo‘shish">♡</button>
+            <div class="product-image p4" role="img" aria-label="Kulrang keng bichimli shim"></div>
+            <div class="product-info"><div><h3>Keng shim</h3><p>Erkin bichim · Uniseks</p></div><strong>359 000 so‘m</strong></div>
+            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
+          </article>
+        </div>
+        <p class="empty-state" hidden>Bu bo‘limda mahsulot topilmadi.</p>
+      </section>
+
+      <section class="collection" id="collection">
+        <div class="collection-number">02</div>
+        <div class="collection-copy">
+          <p class="eyebrow"><span></span> NOVA essentials</p>
+          <h2>Kamroq shovqin.<br />Ko‘proq <em>siz.</em></h2>
+          <p>Bir-biriga oson moslashadigan, uzoq xizmat qiladigan va har kuni kiyishga yaraydigan asosiy liboslar.</p>
+          <a href="#new">Essentials tanlovi <span>→</span></a>
+        </div>
+        <div class="stat"><strong>4.9</strong><span>mijozlar bahosi</span></div>
+        <div class="stat"><strong>14 kun</strong><span>ichida almashtirish</span></div>
+      </section>
+
+      <section class="about" id="about">
+        <p>Biz kiyimni shunchaki obraz emas, <strong>o‘zingizni erkin ifodalash usuli</strong> deb bilamiz.</p>
+        <a href="mailto:salom@nova.uz">Biz bilan bog‘laning ↗</a>
+      </section>
+    </main>
+
+    <footer>
+      <div><a class="logo" href="#top">NO<span>V</span>A</a><p>Toshkent bo‘ylab yetkazib beramiz.</p></div>
+      <div class="footer-links"><a href="#new">Do‘kon</a><a href="#about">Biz haqimizda</a><a href="mailto:salom@nova.uz">Aloqa</a></div>
+      <p>© 2026 NOVA</p>
+    </footer>
+
+    <div class="toast" role="status" aria-live="polite">Mahsulot savatga qo‘shildi</div>
+    <script src="script.js"></script>
+  </body>
+</html>
