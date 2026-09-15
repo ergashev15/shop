@@ -66,13 +66,13 @@ h1 em, .collection h2 em { font-style: normal; color: transparent; -webkit-text-
 .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
 .product-card { min-width: 0; position: relative; }
 .product-card.hidden { display: none; }
-.product-image { aspect-ratio: .78; background-image: url("assets/products.png"); background-size: 200% 200%; background-repeat: no-repeat; background-color: #e4e5e8; transition: transform .35s; }
+.product-image { aspect-ratio: .78; background-image: url("assets/products.jpg"); background-size: 200% 200%; background-repeat: no-repeat; background-color: #e4e5e8; transition: transform .35s; }
 .product-card:hover .product-image { transform: translateY(-4px); }
 .product-image.p1 { background-position: 0 0; }
 .product-image.p2 { background-position: 100% 0; }
 .product-image.p3 { background-position: 0 100%; }
 .product-image.p4 { background-position: 100% 100%; }
-.product-image.category-image { background-image: url("assets/category-products.png"); }
+.product-image.category-image { background-image: url("assets/category-products.jpg"); }
 .product-image.c1 { background-position: 0 0; }
 .product-image.c2 { background-position: 100% 0; }
 .product-image.c3 { background-position: 0 100%; }
@@ -88,7 +88,7 @@ h1 em, .collection h2 em { font-style: normal; color: transparent; -webkit-text-
 .add-btn { width: 100%; display: flex; justify-content: space-between; border: 0; background: transparent; padding: 13px 0; font-size: .84rem; cursor: pointer; color: var(--muted); transition: color .2s; }
 .add-btn:hover { color: var(--blue); }
 .empty-state { text-align: center; color: var(--muted); padding: 50px; }
-.collection { min-height: 560px; background-color: #100208; background-image: linear-gradient(90deg, rgba(13,1,7,.96), rgba(24,0,5,.82)), url("assets/robiya-background.png"); background-size: cover; background-position: center; color: white; display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; align-items: end; gap: 40px; padding: clamp(60px, 8vw, 120px) clamp(20px, 5vw, 80px); position: relative; overflow: hidden; }
+.collection { min-height: 560px; background-color: #100208; background-image: linear-gradient(90deg, rgba(13,1,7,.96), rgba(24,0,5,.82)), url("assets/robiya-background.jpg"); background-size: cover; background-position: center; color: white; display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; align-items: end; gap: 40px; padding: clamp(60px, 8vw, 120px) clamp(20px, 5vw, 80px); position: relative; overflow: hidden; }
 .collection::after { content: "R"; position: absolute; right: 2vw; top: -14vw; color: rgba(255,255,255,.035); font: italic 600 43vw/.8 "Cormorant Garamond", serif; pointer-events: none; }
 .collection > * { position: relative; z-index: 1; }
 .collection-number { align-self: start; color: #ef233c; font: 700 1rem "Montserrat"; }
