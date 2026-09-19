@@ -21,7 +21,7 @@ Admin panel: **https://robiya-shop.malumot-formasi.workers.dev/admin**
 - Sevimlilarni belgilash
 - Savat hisoblagichi va xabarnoma
 - Mobil qurilmalar uchun moslashuvchan menyu
-- Admin panel orqali mahsulot narxi va rasmini yangilash
+- Admin panel orqali yangi mahsulot qo‘shish, narxi va rasmini yangilash
 - Responsive va qulay interfeys
 
 ## Texnologiyalar

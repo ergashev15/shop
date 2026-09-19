@@ -13,3 +13,13 @@ export const productImages = sqliteTable('product_images', {
   contentType: text('content_type').notNull(),
   updatedAt: integer('updated_at').notNull(),
 });
+
+export const customProducts = sqliteTable('custom_products', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  category: text('category').notNull(),
+  price: integer('price').notNull(),
+  createdAt: integer('created_at').notNull(),
+  updatedAt: integer('updated_at').notNull(),
+});

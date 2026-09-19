@@ -12,7 +12,8 @@ const EXTENSIONS: Record<string, string> = {
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
   if (!(await isAdminRequest())) return NextResponse.json({ error: 'Ruxsat berilmadi.' }, { status: 403 });
   const { id } = await context.params;
-  if (!isKnownProduct(id)) return NextResponse.json({ error: 'Mahsulot topilmadi.' }, { status: 404 });
+  const customProduct = await env.DB.prepare('SELECT id FROM custom_products WHERE id = ?').bind(id).first<{ id: string }>();
+  if (!isKnownProduct(id) && !customProduct) return NextResponse.json({ error: 'Mahsulot topilmadi.' }, { status: 404 });
 
   const form = await request.formData();
   const price = Number(form.get('price'));
@@ -26,7 +27,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   if (image instanceof File && image.size > 0) {
     const extension = EXTENSIONS[image.type];
     if (!extension) return NextResponse.json({ error: 'Faqat JPG, PNG, WebP yoki AVIF rasm yuklang.' }, { status: 400 });
-    if (image.size > MAX_IMAGE_SIZE) return NextResponse.json({ error: 'Rasm hajmi 8 MB dan oshmasligi kerak.' }, { status: 400 });
+    if (image.size > MAX_IMAGE_SIZE) return NextResponse.json({ error: 'Rasm juda katta. Boshqa rasm tanlang.' }, { status: 400 });
     imageKey = id;
     await env.DB.prepare(`
       INSERT INTO product_images (id, bytes, content_type, updated_at)
@@ -38,14 +39,19 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     `).bind(id, new Uint8Array(await image.arrayBuffer()), image.type, Date.now()).run();
   }
 
-  await env.DB.prepare(`
-    INSERT INTO product_overrides (id, price, image_key, updated_at)
-    VALUES (?, ?, ?, ?)
-    ON CONFLICT(id) DO UPDATE SET
-      price = excluded.price,
-      image_key = excluded.image_key,
-      updated_at = excluded.updated_at
-  `).bind(id, price, imageKey, Date.now()).run();
+  if (customProduct) {
+    await env.DB.prepare('UPDATE custom_products SET price = ?, updated_at = ? WHERE id = ?')
+      .bind(price, Date.now(), id).run();
+  } else {
+    await env.DB.prepare(`
+      INSERT INTO product_overrides (id, price, image_key, updated_at)
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        price = excluded.price,
+        image_key = excluded.image_key,
+        updated_at = excluded.updated_at
+    `).bind(id, price, imageKey, Date.now()).run();
+  }
 
   const product = (await getProducts()).find((item) => item.id === id);
   return NextResponse.json(product, { headers: { 'Cache-Control': 'no-store' } });

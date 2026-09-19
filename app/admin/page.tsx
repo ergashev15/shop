@@ -16,7 +16,7 @@ export default async function AdminPage() {
         <nav className="admin-nav"><a href="/">Do‘kon</a><a href="/api/admin/logout">Chiqish</a></nav>
       </header>
       <main className="admin-main">
-        <div className="admin-heading"><h1>Mahsulotlar</h1><p>Narxni yozing yoki yangi rasm tanlang. Har bir mahsulotni alohida saqlashingiz mumkin.</p></div>
+        <div className="admin-heading"><h1>Mahsulotlar</h1><p>Yangi mahsulot qo‘shing yoki mavjud mahsulotlarning narxi va rasmini yangilang.</p></div>
         <AdminProducts initialProducts={products} />
       </main>
     </div>

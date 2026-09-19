@@ -4,6 +4,12 @@ import { useState } from 'react';
 import type { Product } from '@/lib/products';
 
 type Draft = { price: string; file: File | null; preview: string | null };
+type NewProductDraft = { name: string; description: string; category: string; price: string; file: File | null; preview: string | null };
+
+const categories = [
+  ['ustki', 'Ustki kiyim'], ['kundalik', 'Kundalik'], ['bosh', 'Bosh kiyim'],
+  ['ichki', 'Ichki kiyim'], ['oyoq', 'Oyoq kiyim'], ['pastki', 'Pastki kiyim'],
+];
 
 export default function AdminProducts({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState(initialProducts);
@@ -12,6 +18,9 @@ export default function AdminProducts({ initialProducts }: { initialProducts: Pr
   );
   const [saving, setSaving] = useState<string | null>(null);
   const [messages, setMessages] = useState<Record<string, { text: string; error?: boolean }>>({});
+  const [adding, setAdding] = useState(false);
+  const [newStatus, setNewStatus] = useState<{ text: string; error?: boolean }>({ text: '' });
+  const [newProduct, setNewProduct] = useState<NewProductDraft>({ name: '', description: '', category: 'kundalik', price: '', file: null, preview: null });
 
   function updatePrice(id: string, price: string) {
     setDrafts((current) => ({ ...current, [id]: { ...current[id], price } }));
@@ -64,8 +73,77 @@ export default function AdminProducts({ initialProducts }: { initialProducts: Pr
     }
   }
 
+  async function updateNewFile(file: File | null) {
+    if (!file) {
+      setNewProduct((current) => ({ ...current, file: null, preview: null }));
+      return;
+    }
+    setNewStatus({ text: file.size > 1_500_000 ? 'Rasm siqilmoqda…' : '' });
+    try {
+      const prepared = file.size > 1_500_000 ? await compressImage(file) : file;
+      setNewProduct((current) => {
+        if (current.preview) URL.revokeObjectURL(current.preview);
+        return { ...current, file: prepared, preview: URL.createObjectURL(prepared) };
+      });
+      setNewStatus({ text: prepared !== file ? 'Rasm yuklash uchun siqildi.' : '' });
+    } catch {
+      setNewStatus({ text: 'Rasmni siqib bo‘lmadi. Boshqa rasm tanlang.', error: true });
+    }
+  }
+
+  async function addProduct(event: React.FormEvent) {
+    event.preventDefault();
+    const price = Number(newProduct.price);
+    if (!newProduct.name.trim() || !Number.isInteger(price) || price <= 0 || !newProduct.file) {
+      setNewStatus({ text: 'Nomi, narxi va rasmini to‘liq kiriting.', error: true });
+      return;
+    }
+    setAdding(true);
+    setNewStatus({ text: 'Mahsulot qo‘shilmoqda…' });
+    const form = new FormData();
+    form.set('name', newProduct.name);
+    form.set('description', newProduct.description);
+    form.set('category', newProduct.category);
+    form.set('price', String(price));
+    form.set('image', newProduct.file);
+
+    try {
+      const response = await fetch('/api/admin/products', { method: 'POST', body: form });
+      const data = await response.json() as Product | { error: string };
+      if (!response.ok || 'error' in data) throw new Error('error' in data ? data.error : 'Mahsulotni qo‘shib bo‘lmadi.');
+      setProducts((current) => [data, ...current]);
+      setDrafts((current) => ({ ...current, [data.id]: { price: String(data.price), file: null, preview: null } }));
+      if (newProduct.preview) URL.revokeObjectURL(newProduct.preview);
+      setNewProduct({ name: '', description: '', category: 'kundalik', price: '', file: null, preview: null });
+      setNewStatus({ text: 'Mahsulot qo‘shildi va do‘konda ko‘rindi.' });
+    } catch (error) {
+      setNewStatus({ text: error instanceof Error ? error.message : 'Mahsulotni qo‘shib bo‘lmadi.', error: true });
+    } finally {
+      setAdding(false);
+    }
+  }
+
   return (
-    <div className="admin-grid">
+    <>
+      <section className="admin-create">
+        <div className="admin-create-copy"><span>Yangi mahsulot</span><h2>Katalogni kengaytiring</h2><p>Mahsulot ma’lumotlarini kiriting va rasm tanlang. Saqlangach u darhol do‘konda paydo bo‘ladi.</p></div>
+        <form className="admin-create-form" onSubmit={addProduct}>
+          <div className="admin-create-preview" style={newProduct.preview ? { backgroundImage: `url(${newProduct.preview})` } : undefined}>{!newProduct.preview && <span>Rasm</span>}</div>
+          <div className="admin-create-fields">
+            <label>Mahsulot nomi<input type="text" maxLength={80} value={newProduct.name} onChange={(event) => setNewProduct((current) => ({ ...current, name: event.target.value }))} placeholder="Masalan, Yozgi ko‘ylak" required /></label>
+            <label>Qisqa tavsif<textarea maxLength={140} value={newProduct.description} onChange={(event) => setNewProduct((current) => ({ ...current, description: event.target.value }))} placeholder="Mato turi · Bichimi" /></label>
+            <div className="admin-create-row">
+              <label>Kategoriya<select value={newProduct.category} onChange={(event) => setNewProduct((current) => ({ ...current, category: event.target.value }))}>{categories.map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
+              <label>Narxi, so‘m<input type="number" min="1" step="1000" value={newProduct.price} onChange={(event) => setNewProduct((current) => ({ ...current, price: event.target.value }))} placeholder="250000" required /></label>
+            </div>
+            <label>Mahsulot rasmi<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(event) => void updateNewFile(event.target.files?.[0] ?? null)} required /></label>
+            <div className={`admin-status${newStatus.error ? ' admin-error' : ''}`} aria-live="polite">{newStatus.text}</div>
+            <button className="admin-save" type="submit" disabled={adding}>{adding ? 'Qo‘shilmoqda…' : 'Mahsulotni qo‘shish'}</button>
+          </div>
+        </form>
+      </section>
+      <div className="admin-list-heading"><h2>Mavjud mahsulotlar</h2><span>{products.length} ta mahsulot</span></div>
+      <div className="admin-grid">
       {products.map((product) => {
         const draft = drafts[product.id];
         const imageUrl = draft.preview ?? product.imageUrl;
@@ -84,7 +162,8 @@ export default function AdminProducts({ initialProducts }: { initialProducts: Pr
           </article>
         );
       })}
-    </div>
+      </div>
+    </>
   );
 }
 

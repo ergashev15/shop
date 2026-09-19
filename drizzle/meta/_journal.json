@@ -15,6 +15,13 @@
       "when": 1789797380919,
       "tag": "0001_dashing_wild_child",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789797882931,
+      "tag": "0002_sudden_ulik",
+      "breakpoints": true
     }
   ]
 }
