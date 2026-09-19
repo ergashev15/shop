@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowUpRight, Heart, Menu, Plus, Search, ShoppingBag, X } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import { formatPrice } from '@/lib/products';
 
@@ -18,6 +19,7 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
   const [cart, setCart] = useState(0);
   const [wished, setWished] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch('/api/products', { cache: 'no-store' })
@@ -31,6 +33,20 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
     const timer = window.setTimeout(() => setToast(false), 1800);
     return () => window.clearTimeout(timer);
   }, [toast, cart]);
+
+  useEffect(() => {
+    if (searchOpen) searchInputRef.current?.focus();
+  }, [searchOpen]);
+
+  useEffect(() => {
+    function closeOverlays(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return;
+      setSearchOpen(false);
+      setMenuOpen(false);
+    }
+    window.addEventListener('keydown', closeOverlays);
+    return () => window.removeEventListener('keydown', closeOverlays);
+  }, []);
 
   const visibleProducts = useMemo(() => {
     const query = search.toLocaleLowerCase('uz');
@@ -55,54 +71,54 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
 
   return (
     <>
+      <a className="skip-link" href="#top">Asosiy qismga o‘tish</a>
       <header className="site-header">
         <a className="logo" href="#top" aria-label="Robiya Shop bosh sahifa"><span>Robiya</span><small>shop</small></a>
-        <nav className={`desktop-nav${menuOpen ? ' open' : ''}`} aria-label="Asosiy menyu">
+        <nav id="main-navigation" className={`desktop-nav${menuOpen ? ' open' : ''}`} aria-label="Asosiy menyu">
           <a href="#new" onClick={() => setMenuOpen(false)}>Yangi</a>
           <a href="#collection" onClick={() => setMenuOpen(false)}>Kolleksiya</a>
           <a href="#about" onClick={() => setMenuOpen(false)}>Biz haqimizda</a>
           <a href="#contact" onClick={() => setMenuOpen(false)}>Aloqa</a>
         </nav>
         <div className="header-actions">
-          <button className="icon-btn search-toggle" type="button" aria-label="Qidiruvni ochish" onClick={() => setSearchOpen(true)}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
+          <button className="icon-btn search-toggle" type="button" aria-label={searchOpen ? 'Qidiruvni yopish' : 'Qidiruvni ochish'} aria-expanded={searchOpen} onClick={() => { setMenuOpen(false); setSearchOpen((open) => !open); }}>
+            {searchOpen ? <X aria-hidden="true" /> : <Search aria-hidden="true" />}
           </button>
-          <button className="cart-btn" type="button" aria-label="Savatni ochish"><span>Savat</span><b className="cart-count">{cart}</b></button>
-          <button className="menu-btn" type="button" aria-label="Menyuni ochish" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}><span /><span /></button>
+          <button className="cart-btn" type="button" aria-label={`Savat, ${cart} ta mahsulot`}><ShoppingBag aria-hidden="true" /><span>Savat</span><b className="cart-count">{cart}</b></button>
+          <button className="menu-btn" type="button" aria-label={menuOpen ? 'Menyuni yopish' : 'Menyuni ochish'} aria-controls="main-navigation" aria-expanded={menuOpen} onClick={() => { setSearchOpen(false); setMenuOpen((open) => !open); }}>{menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
         </div>
       </header>
 
-      <div className={`search-panel${searchOpen ? ' open' : ''}`} aria-hidden={!searchOpen}>
+      <div className={`search-panel${searchOpen ? ' open' : ''}`} role="search" aria-hidden={!searchOpen}>
         <label htmlFor="search">Mahsulot qidiring</label>
         <div className="search-row">
-          <input id="search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Masalan, sviter" autoComplete="off" autoFocus={searchOpen} />
+          <input ref={searchInputRef} id="search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Masalan, ko‘ylak" autoComplete="off" tabIndex={searchOpen ? 0 : -1} />
           <button className="search-close" type="button" onClick={() => setSearchOpen(false)}>Yopish</button>
         </div>
       </div>
 
       <main id="top">
         <section className="hero" aria-labelledby="hero-title">
-          <img src="/assets/robiya-background.jpg" alt="Qizil ipak fonidagi Robiya Shop belgisi" />
+          <img src="/assets/robiya-background.jpg" alt="Qizil ipak fonidagi Robiya Shop belgisi" fetchPriority="high" decoding="async" />
           <div className="hero-shade" />
           <div className="hero-copy">
             <p className="eyebrow"><span /> Yangi kolleksiya · 2026</p>
             <h1 id="hero-title">Butun oila<br />uchun <em>uslub.</em></h1>
             <p>Ayollar, erkaklar va bolalar uchun didli, qulay kiyimlar.</p>
-            <a className="primary-btn" href="#new">Xaridni boshlash <span>↗</span></a>
+            <a className="primary-btn" href="#new">Xaridni boshlash <ArrowUpRight aria-hidden="true" /></a>
           </div>
           <div className="hero-note"><span>01</span><p>Robiya Shop<br />Yangi mavsum</p></div>
         </section>
 
-        <section className="marquee" aria-label="Do‘kon afzalliklari"><div>
-          <span>Yangi kolleksiya</span><i>✦</i><span>Qulay bichim</span><i>✦</i><span>Tez yetkazib berish</span><i>✦</i><span>Oson almashtirish</span><i>✦</i>
-          <span>Yangi kolleksiya</span><i>✦</i><span>Qulay bichim</span><i>✦</i><span>Tez yetkazib berish</span><i>✦</i><span>Oson almashtirish</span><i>✦</i>
-        </div></section>
+        <section className="benefit-strip" aria-label="Do‘kon xususiyatlari">
+          <span>Yangi kolleksiya</span><i aria-hidden="true">✦</i><span>Qulay bichim</span><i aria-hidden="true">✦</i><span>Butun oila uchun</span><i aria-hidden="true">✦</i><span>Oson tanlov</span>
+        </section>
 
         <section className="products-section" id="new">
           <div className="section-heading">
             <div><p className="eyebrow dark"><span /> Robiya katalogi</p><h2>Barcha bo‘limlar</h2></div>
             <div className="filters" role="group" aria-label="Mahsulot turi">
-              {filters.map(([value, label]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}>{label}</button>)}
+              {filters.map(([value, label]) => <button key={value} className={filter === value ? 'active' : ''} aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}</button>)}
             </div>
           </div>
           <div className="product-grid" id="product-grid">
@@ -111,10 +127,10 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
               return (
                 <article className="product-card" data-category={product.category} data-name={product.name} key={product.id}>
                   {product.tag && <span className={`tag${product.tagClass ? ` ${product.tagClass}` : ''}`}>{product.tag}</span>}
-                  <button className={`wish${wished.has(product.id) ? ' active' : ''}`} type="button" aria-label={`${product.name}ni sevimlilarga qo‘shish`} onClick={() => toggleWish(product.id)}>{wished.has(product.id) ? '♥' : '♡'}</button>
+                  <button className={`wish${wished.has(product.id) ? ' active' : ''}`} type="button" aria-label={`${product.name}ni sevimlilarga qo‘shish`} aria-pressed={wished.has(product.id)} onClick={() => toggleWish(product.id)}><Heart aria-hidden="true" fill={wished.has(product.id) ? 'currentColor' : 'none'} /></button>
                   <div className={`product-image ${product.imageClass}`} role="img" aria-label={product.name} style={overrideStyle} />
                   <div className="product-info"><div><h3>{product.name}</h3><p>{product.description}</p></div><strong>{formatPrice(product.price)}</strong></div>
-                  <button className="add-btn" type="button" onClick={addToCart}>Savatga qo‘shish <span>＋</span></button>
+                  <button className="add-btn" type="button" onClick={addToCart}>Savatga qo‘shish <Plus aria-hidden="true" /></button>
                 </article>
               );
             })}
@@ -130,7 +146,7 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
         <section className="about" id="about"><p>Biz kiyimni shunchaki obraz emas, <strong>o‘zingizni erkin ifodalash usuli</strong> deb bilamiz.</p></section>
 
         <section className="contact" id="contact" aria-labelledby="contact-title">
-          <div className="contact-intro"><p className="eyebrow dark"><span /> Savolingiz bormi?</p><h2 id="contact-title">Siz bilan<br /><em>bog‘lanamiz.</em></h2><p>Mahsulot yoki o‘lcham bo‘yicha savollaringizga mamnuniyat bilan javob beramiz.</p><div className="contact-actions"><a className="primary-btn" href="tel:+998771931903">Qo‘ng‘iroq qilish <span>↗</span></a><a className="text-btn" href="https://t.me/Rob1ya_shop_uz" target="_blank" rel="noopener noreferrer">Telegram orqali yozish →</a></div></div>
+          <div className="contact-intro"><p className="eyebrow dark"><span /> Savolingiz bormi?</p><h2 id="contact-title">Siz bilan<br /><em>bog‘lanamiz.</em></h2><p>Mahsulot yoki o‘lcham bo‘yicha savollaringizga mamnuniyat bilan javob beramiz.</p><div className="contact-actions"><a className="primary-btn" href="tel:+998771931903">Qo‘ng‘iroq qilish <ArrowUpRight aria-hidden="true" /></a><a className="text-btn" href="https://t.me/Rob1ya_shop_uz" target="_blank" rel="noopener noreferrer">Telegram orqali yozish →</a></div></div>
           <div className="contact-details">
             <article><span>01 / Telefon</span><div className="phone-links"><a href="tel:+998771931903">+998 77 193 19 03</a><a href="tel:+998936944429">+998 93 694 44 29</a></div><p>Har kuni, 09:00–21:00</p></article>
             <article><span>02 / Manzil</span><a href="https://maps.app.goo.gl/Aa27ijGpr1aQRBTM7" target="_blank" rel="noopener noreferrer">Andijon viloyati, Xonobod shahri ↗</a><p>Manzilni Google Xaritalarda ochish</p></article>
