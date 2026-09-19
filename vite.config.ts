@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 import hostingConfig from './.openai/hosting.json';
 
 const PLACEHOLDER_DATABASE_ID = '00000000-0000-4000-8000-000000000000';
-const { d1, r2 } = hostingConfig;
+const { d1 } = hostingConfig;
 
 export default defineConfig(async () => {
   process.env.WRANGLER_WRITE_LOGS ??= 'false';
@@ -28,9 +28,8 @@ export default defineConfig(async () => {
           main: 'vinext/server/fetch-handler',
           compatibility_flags: ['nodejs_compat'],
           d1_databases: d1
-            ? [{ binding: d1, database_name: 'robiya-shop-db', database_id: PLACEHOLDER_DATABASE_ID }]
+            ? [{ binding: d1, database_name: 'robiya-shop-db', database_id: 'ced577b2-f2ea-4aa6-a783-99049d4843d5' }]
             : [],
-          r2_buckets: r2 ? [{ binding: r2, bucket_name: 'robiya-shop-files' }] : [],
         },
       }),
     ],

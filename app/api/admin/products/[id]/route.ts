@@ -4,7 +4,7 @@ import { isAdminRequest } from '@/lib/admin';
 import { isKnownProduct } from '@/lib/products';
 import { getProducts } from '@/lib/products.server';
 
-const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
+const MAX_IMAGE_SIZE = 1_800_000;
 const EXTENSIONS: Record<string, string> = {
   'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/avif': 'avif',
 };
@@ -27,10 +27,15 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     const extension = EXTENSIONS[image.type];
     if (!extension) return NextResponse.json({ error: 'Faqat JPG, PNG, WebP yoki AVIF rasm yuklang.' }, { status: 400 });
     if (image.size > MAX_IMAGE_SIZE) return NextResponse.json({ error: 'Rasm hajmi 8 MB dan oshmasligi kerak.' }, { status: 400 });
-    const nextKey = `products/${id}-${crypto.randomUUID()}.${extension}`;
-    await env.FILES.put(nextKey, await image.arrayBuffer(), { httpMetadata: { contentType: image.type } });
-    if (imageKey) await env.FILES.delete(imageKey);
-    imageKey = nextKey;
+    imageKey = id;
+    await env.DB.prepare(`
+      INSERT INTO product_images (id, bytes, content_type, updated_at)
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        bytes = excluded.bytes,
+        content_type = excluded.content_type,
+        updated_at = excluded.updated_at
+    `).bind(id, new Uint8Array(await image.arrayBuffer()), image.type, Date.now()).run();
   }
 
   await env.DB.prepare(`

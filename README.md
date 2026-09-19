@@ -2,14 +2,16 @@
 
 Butun oila uchun zamonaviy va didli kiyimlar katalogi. Sayt o‘zbek tilida yaratilgan, barcha ekran o‘lchamlariga moslashadi va hech qanday framework talab qilmaydi.
 
-[![Jonli sayt](https://img.shields.io/badge/Jonli_sayt-Ochish-7d1028?style=for-the-badge)](https://robiya-shop-uz.mesuterat.chatgpt.site)
+[![Jonli sayt](https://img.shields.io/badge/Jonli_sayt-Ochish-7d1028?style=for-the-badge)](https://robiya-shop.malumot-formasi.workers.dev)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)](https://developer.mozilla.org/docs/Web/CSS)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=111)](https://developer.mozilla.org/docs/Web/JavaScript)
 
 ## Jonli sayt
 
-**https://robiya-shop-uz.mesuterat.chatgpt.site**
+**https://robiya-shop.malumot-formasi.workers.dev**
+
+Admin panel: **https://robiya-shop.malumot-formasi.workers.dev/admin**
 
 ## Imkoniyatlar
 
@@ -19,6 +21,7 @@ Butun oila uchun zamonaviy va didli kiyimlar katalogi. Sayt o‘zbek tilida yara
 - Sevimlilarni belgilash
 - Savat hisoblagichi va xabarnoma
 - Mobil qurilmalar uchun moslashuvchan menyu
+- Admin panel orqali mahsulot narxi va rasmini yangilash
 - Responsive va qulay interfeys
 
 ## Texnologiyalar
