@@ -120,7 +120,7 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
               );
             })}
           </div>
-          {visibleProducts.length === 0 && <p className="empty-state">Bu bo‘limda mahsulot topilmadi.</p>}
+          {visibleProducts.length === 0 && <p className="empty-state">Hozircha mahsulotlar qo‘shilmagan.</p>}
         </section>
 
         <section className="collection" id="collection">
