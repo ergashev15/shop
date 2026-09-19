@@ -55,7 +55,6 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
 
   return (
     <>
-      <div className="announcement">Robiya Shop · 500 000 so‘mdan yuqori buyurtmalarga bepul yetkazib berish</div>
       <header className="site-header">
         <a className="logo" href="#top" aria-label="Robiya Shop bosh sahifa"><span>Robiya</span><small>shop</small></a>
         <nav className={`desktop-nav${menuOpen ? ' open' : ''}`} aria-label="Asosiy menyu">
@@ -126,8 +125,6 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
         <section className="collection" id="collection">
           <div className="collection-number">02</div>
           <div className="collection-copy"><p className="eyebrow"><span /> Robiya tanlovi</p><h2>Har bir kun.<br />Har bir <em>oila.</em></h2><p>Bir-biriga oson moslashadigan, uzoq xizmat qiladigan va oilaning har bir a’zosi uchun qulay liboslar.</p><a href="#new">Kolleksiyani tanlash <span>→</span></a></div>
-          <div className="stat"><strong>4.9</strong><span>mijozlar bahosi</span></div>
-          <div className="stat"><strong>14 kun</strong><span>ichida almashtirish</span></div>
         </section>
 
         <section className="about" id="about"><p>Biz kiyimni shunchaki obraz emas, <strong>o‘zingizni erkin ifodalash usuli</strong> deb bilamiz.</p></section>
