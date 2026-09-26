@@ -1,14 +1,28 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUpRight, Heart, Menu, Plus, Search, ShoppingBag, X } from 'lucide-react';
+import { ArrowUpRight, Heart, Menu, Search, X } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import { formatPrice } from '@/lib/products';
 
 const filters = [
   ['all', 'Barchasi'], ['ustki', 'Ustki kiyim'], ['kundalik', 'Kundalik'],
   ['bosh', 'Bosh kiyim'], ['ichki', 'Ichki kiyim'], ['oyoq', 'Oyoq kiyim'], ['pastki', 'Pastki kiyim'],
+  ['koylak', 'Ko‘ylaklar'], ['sport', 'Sport kiyim'], ['uy', 'Uy kiyimi'],
+  ['aksessuar', 'Aksessuarlar'], ['sumka', 'Sumkalar'],
 ];
+const FAVORITES_STORAGE_KEY = 'robiya-shop-favorites';
+const SELLER_TELEGRAM = 'Nadira_KamBaRoVa';
+const STORE_ORIGIN = 'https://robiya-shop.robiya.workers.dev';
+
+function getTelegramOrderUrl(product: Product) {
+  const imageUrl = product.imageUrl ? new URL(product.imageUrl, STORE_ORIGIN).toString() : null;
+  const message = [
+    `Assalomu alaykum! “${product.name}” mahsulotini (${formatPrice(product.price)}) sotib olmoqchiman.`,
+    imageUrl ? `Mahsulot rasmi: ${imageUrl}` : null,
+  ].filter(Boolean).join('\n');
+  return `https://t.me/${SELLER_TELEGRAM}?text=${encodeURIComponent(message)}`;
+}
 
 export default function Storefront({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState(initialProducts);
@@ -16,9 +30,7 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
   const [search, setSearch] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [cart, setCart] = useState(0);
   const [wished, setWished] = useState<Set<string>>(new Set());
-  const [toast, setToast] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -29,10 +41,15 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
   }, []);
 
   useEffect(() => {
-    if (!toast) return;
-    const timer = window.setTimeout(() => setToast(false), 1800);
-    return () => window.clearTimeout(timer);
-  }, [toast, cart]);
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(FAVORITES_STORAGE_KEY) ?? '[]');
+      if (Array.isArray(saved)) {
+        setWished(new Set(saved.filter((id): id is string => typeof id === 'string')));
+      }
+    } catch {
+      window.localStorage.removeItem(FAVORITES_STORAGE_KEY);
+    }
+  }, []);
 
   useEffect(() => {
     if (searchOpen) searchInputRef.current?.focus();
@@ -56,15 +73,15 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
     );
   }, [products, filter, search]);
 
-  function addToCart() {
-    setCart((value) => value + 1);
-    setToast(true);
-  }
-
   function toggleWish(id: string) {
     setWished((current) => {
       const next = new Set(current);
       next.has(id) ? next.delete(id) : next.add(id);
+      try {
+        window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...next]));
+      } catch {
+        // The favorite still works for this visit when browser storage is unavailable.
+      }
       return next;
     });
   }
@@ -84,7 +101,6 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
           <button className="icon-btn search-toggle" type="button" aria-label={searchOpen ? 'Qidiruvni yopish' : 'Qidiruvni ochish'} aria-expanded={searchOpen} onClick={() => { setMenuOpen(false); setSearchOpen((open) => !open); }}>
             {searchOpen ? <X aria-hidden="true" /> : <Search aria-hidden="true" />}
           </button>
-          <button className="cart-btn" type="button" aria-label={`Savat, ${cart} ta mahsulot`}><ShoppingBag aria-hidden="true" /><span>Savat</span><b className="cart-count">{cart}</b></button>
           <button className="menu-btn" type="button" aria-label={menuOpen ? 'Menyuni yopish' : 'Menyuni ochish'} aria-controls="main-navigation" aria-expanded={menuOpen} onClick={() => { setSearchOpen(false); setMenuOpen((open) => !open); }}>{menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
         </div>
       </header>
@@ -128,9 +144,10 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
                 <article className="product-card" data-category={product.category} data-name={product.name} key={product.id}>
                   {product.tag && <span className={`tag${product.tagClass ? ` ${product.tagClass}` : ''}`}>{product.tag}</span>}
                   <button className={`wish${wished.has(product.id) ? ' active' : ''}`} type="button" aria-label={`${product.name}ni sevimlilarga qo‘shish`} aria-pressed={wished.has(product.id)} onClick={() => toggleWish(product.id)}><Heart aria-hidden="true" fill={wished.has(product.id) ? 'currentColor' : 'none'} /></button>
-                  <div className={`product-image ${product.imageClass}`} role="img" aria-label={product.name} style={overrideStyle} />
-                  <div className="product-info"><div><h3>{product.name}</h3><p>{product.description}</p></div><strong>{formatPrice(product.price)}</strong></div>
-                  <button className="add-btn" type="button" onClick={addToCart}>Savatga qo‘shish <Plus aria-hidden="true" /></button>
+                  <a className="product-contact" href={getTelegramOrderUrl(product)} target="_blank" rel="noopener noreferrer" aria-label={`${product.name} mahsulotini Telegram orqali buyurtma qilish`}>
+                    <div className={`product-image ${product.imageClass}`} role="img" aria-label={product.name} style={overrideStyle} />
+                    <div className="product-info"><div><h3>{product.name}</h3><p>{product.description}</p></div><strong>{formatPrice(product.price)}</strong></div>
+                  </a>
                 </article>
               );
             })}
@@ -157,7 +174,6 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
       </main>
 
       <footer><div><a className="logo" href="#top"><span>Robiya</span><small>shop</small></a><p><a href="tel:+998771931903">+998 77 193 19 03</a><br /><a href="tel:+998936944429">+998 93 694 44 29</a></p></div><div className="footer-links"><a href="#new">Do‘kon</a><a href="#about">Biz haqimizda</a><a href="#contact">Aloqa</a></div><p>© 2026 Robiya Shop</p></footer>
-      <div className={`toast${toast ? ' show' : ''}`} role="status" aria-live="polite">Mahsulot savatga qo‘shildi</div>
     </>
   );
 }

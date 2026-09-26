@@ -9,6 +9,8 @@ type NewProductDraft = { name: string; description: string; category: string; pr
 const categories = [
   ['ustki', 'Ustki kiyim'], ['kundalik', 'Kundalik'], ['bosh', 'Bosh kiyim'],
   ['ichki', 'Ichki kiyim'], ['oyoq', 'Oyoq kiyim'], ['pastki', 'Pastki kiyim'],
+  ['koylak', 'Ko‘ylaklar'], ['sport', 'Sport kiyim'], ['uy', 'Uy kiyimi'],
+  ['aksessuar', 'Aksessuarlar'], ['sumka', 'Sumkalar'],
 ];
 
 export default function AdminProducts({ initialProducts }: { initialProducts: Product[] }) {
@@ -17,6 +19,7 @@ export default function AdminProducts({ initialProducts }: { initialProducts: Pr
     Object.fromEntries(initialProducts.map((product) => [product.id, { price: String(product.price), file: null, preview: null }])),
   );
   const [saving, setSaving] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [messages, setMessages] = useState<Record<string, { text: string; error?: boolean }>>({});
   const [adding, setAdding] = useState(false);
   const [newStatus, setNewStatus] = useState<{ text: string; error?: boolean }>({ text: '' });
@@ -48,7 +51,7 @@ export default function AdminProducts({ initialProducts }: { initialProducts: Pr
   async function saveProduct(product: Product) {
     const draft = drafts[product.id];
     const price = Number(draft.price);
-    if (!Number.isInteger(price) || price <= 0) {
+    if (!Number.isSafeInteger(price) || price <= 0) {
       setMessages((current) => ({ ...current, [product.id]: { text: 'Narxni to‘g‘ri kiriting.', error: true } }));
       return;
     }
@@ -73,6 +76,35 @@ export default function AdminProducts({ initialProducts }: { initialProducts: Pr
     }
   }
 
+  async function deleteProduct(product: Product) {
+    if (!window.confirm(`“${product.name}” mahsulotini o‘chirmoqchimisiz?`)) return;
+
+    setDeleting(product.id);
+    setMessages((current) => ({ ...current, [product.id]: { text: 'O‘chirilmoqda…' } }));
+    try {
+      const response = await fetch(`/api/admin/products/${encodeURIComponent(product.id)}`, { method: 'DELETE' });
+      const data = await response.json() as { success?: boolean; error?: string };
+      if (!response.ok || !data.success) throw new Error(data.error ?? 'Mahsulotni o‘chirib bo‘lmadi.');
+      const preview = drafts[product.id]?.preview;
+      if (preview) URL.revokeObjectURL(preview);
+      setProducts((current) => current.filter((item) => item.id !== product.id));
+      setDrafts((current) => {
+        const next = { ...current };
+        delete next[product.id];
+        return next;
+      });
+      setMessages((current) => {
+        const next = { ...current };
+        delete next[product.id];
+        return next;
+      });
+    } catch (error) {
+      setMessages((current) => ({ ...current, [product.id]: { text: error instanceof Error ? error.message : 'Mahsulotni o‘chirib bo‘lmadi.', error: true } }));
+    } finally {
+      setDeleting(null);
+    }
+  }
+
   async function updateNewFile(file: File | null) {
     if (!file) {
       setNewProduct((current) => ({ ...current, file: null, preview: null }));
@@ -94,7 +126,7 @@ export default function AdminProducts({ initialProducts }: { initialProducts: Pr
   async function addProduct(event: React.FormEvent) {
     event.preventDefault();
     const price = Number(newProduct.price);
-    if (!newProduct.name.trim() || !Number.isInteger(price) || price <= 0 || !newProduct.file) {
+    if (!newProduct.name.trim() || !Number.isSafeInteger(price) || price <= 0 || !newProduct.file) {
       setNewStatus({ text: 'Nomi, narxi va rasmini to‘liq kiriting.', error: true });
       return;
     }
@@ -134,7 +166,7 @@ export default function AdminProducts({ initialProducts }: { initialProducts: Pr
             <label>Qisqa tavsif<textarea maxLength={140} value={newProduct.description} onChange={(event) => setNewProduct((current) => ({ ...current, description: event.target.value }))} placeholder="Mato turi · Bichimi" /></label>
             <div className="admin-create-row">
               <label>Kategoriya<select value={newProduct.category} onChange={(event) => setNewProduct((current) => ({ ...current, category: event.target.value }))}>{categories.map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
-              <label>Narxi, so‘m<input type="number" min="1" step="1000" value={newProduct.price} onChange={(event) => setNewProduct((current) => ({ ...current, price: event.target.value }))} placeholder="250000" required /></label>
+              <label>Narxi, so‘m<input type="number" min="1" step="1" value={newProduct.price} onChange={(event) => setNewProduct((current) => ({ ...current, price: event.target.value }))} placeholder="250000" required /></label>
             </div>
             <label>Mahsulot rasmi<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(event) => void updateNewFile(event.target.files?.[0] ?? null)} required /></label>
             <div className={`admin-status${newStatus.error ? ' admin-error' : ''}`} aria-live="polite">{newStatus.text}</div>
@@ -154,10 +186,13 @@ export default function AdminProducts({ initialProducts }: { initialProducts: Pr
             <div className={`product-image admin-preview ${product.imageClass}`} style={style} role="img" aria-label={product.name} />
             <div className="admin-card-content">
               <h2>{product.name}</h2>
-              <label>Narxi, so‘m<input type="number" min="1" step="1000" value={draft.price} onChange={(event) => updatePrice(product.id, event.target.value)} /></label>
+              <label>Narxi, so‘m<input type="number" min="1" step="1" value={draft.price} onChange={(event) => updatePrice(product.id, event.target.value)} /></label>
               <label>Yangi rasm<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(event) => void updateFile(product.id, event.target.files?.[0] ?? null)} /></label>
               <div className={`admin-status${message?.error ? ' admin-error' : ''}`} aria-live="polite">{message?.text ?? ''}</div>
-              <button className="admin-save" type="button" disabled={saving === product.id} onClick={() => saveProduct(product)}>{saving === product.id ? 'Saqlanmoqda…' : 'Saqlash'}</button>
+              <div className="admin-card-actions">
+                <button className="admin-save" type="button" disabled={saving === product.id || deleting === product.id} onClick={() => saveProduct(product)}>{saving === product.id ? 'Saqlanmoqda…' : 'Saqlash'}</button>
+                {product.id.startsWith('custom-') && <button className="admin-delete" type="button" disabled={deleting === product.id || saving === product.id} onClick={() => void deleteProduct(product)}>{deleting === product.id ? 'O‘chirilmoqda…' : 'O‘chirish'}</button>}
+              </div>
             </div>
           </article>
         );

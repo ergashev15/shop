@@ -36,6 +36,10 @@
 .admin-card input[type="file"] { font-size: .74rem; padding: 8px; }
 .admin-save { margin-top: auto; border: 0; background: #a90019; color: white; padding: 12px 16px; cursor: pointer; font-weight: 700; }
 .admin-save:disabled { opacity: .55; cursor: wait; }
+.admin-card-actions { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: auto; }
+.admin-card-actions .admin-save { margin-top: 0; }
+.admin-delete { border: 1px solid #a90019; background: transparent; color: #a90019; padding: 11px 16px; cursor: pointer; font-weight: 700; }
+.admin-delete:disabled { opacity: .55; cursor: wait; }
 .admin-status { min-height: 20px; color: #13713a; font-size: .76rem; }
 .admin-error { color: #a90019; }
 .admin-denied { min-height: 100vh; display: grid; place-items: center; padding: 30px; background: #100208; color: white; text-align: center; }

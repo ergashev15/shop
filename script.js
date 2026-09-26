@@ -1,19 +1,3 @@
-const cartCount = document.querySelector('.cart-count');
-const toast = document.querySelector('.toast');
-let cart = 0;
-let toastTimer;
-
-document.querySelectorAll('.add-btn').forEach((button) => {
-  button.addEventListener('click', () => {
-    cart += 1;
-    cartCount.textContent = cart;
-    button.firstChild.textContent = 'Qo‘shildi ';
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
-  });
-});
-
 document.querySelectorAll('.wish').forEach((button) => {
   button.addEventListener('click', () => {
     button.classList.toggle('active');

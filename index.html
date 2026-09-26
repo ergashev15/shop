@@ -25,9 +25,6 @@
         <button class="icon-btn search-toggle" type="button" aria-label="Qidiruvni ochish">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
         </button>
-        <button class="cart-btn" type="button" aria-label="Savatni ochish">
-          <span>Savat</span><b class="cart-count">0</b>
-        </button>
         <button class="menu-btn" type="button" aria-label="Menyuni ochish" aria-expanded="false">
           <span></span><span></span>
         </button>
@@ -79,6 +76,11 @@
             <button data-filter="ichki">Ichki kiyim</button>
             <button data-filter="oyoq">Oyoq kiyim</button>
             <button data-filter="pastki">Pastki kiyim</button>
+            <button data-filter="koylak">Ko‘ylaklar</button>
+            <button data-filter="sport">Sport kiyim</button>
+            <button data-filter="uy">Uy kiyimi</button>
+            <button data-filter="aksessuar">Aksessuarlar</button>
+            <button data-filter="sumka">Sumkalar</button>
           </div>
         </div>
 
@@ -87,49 +89,41 @@
             <button class="wish" type="button" aria-label="Qora overshirtni sevimlilarga qo‘shish">♡</button>
             <div class="product-image p1" role="img" aria-label="Qora overshirt"></div>
             <div class="product-info"><div><h3>Qora overshirt</h3><p>Qalin paxta · Uniseks</p></div><strong>449 000 so‘m</strong></div>
-            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
           </article>
           <article class="product-card" data-category="kundalik" data-name="Krem sviter">
             <span class="tag">Yangi</span><button class="wish" type="button" aria-label="Krem sviterni sevimlilarga qo‘shish">♡</button>
             <div class="product-image p2" role="img" aria-label="Krem rangli to‘qima sviter"></div>
             <div class="product-info"><div><h3>Krem sviter</h3><p>Yumshoq trikotaj</p></div><strong>329 000 so‘m</strong></div>
-            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
           </article>
           <article class="product-card" data-category="kundalik" data-name="Ko‘k hudi">
             <span class="tag blue">Top</span><button class="wish" type="button" aria-label="Ko‘k hudini sevimlilarga qo‘shish">♡</button>
             <div class="product-image p3" role="img" aria-label="Ko‘k rangli hudi"></div>
             <div class="product-info"><div><h3>Ko‘k hudi</h3><p>Og‘ir futer · Oversize</p></div><strong>389 000 so‘m</strong></div>
-            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
           </article>
           <article class="product-card" data-category="kundalik" data-name="Keng shim">
             <button class="wish" type="button" aria-label="Keng shimni sevimlilarga qo‘shish">♡</button>
             <div class="product-image p4" role="img" aria-label="Kulrang keng bichimli shim"></div>
             <div class="product-info"><div><h3>Keng shim</h3><p>Erkin bichim · Uniseks</p></div><strong>359 000 so‘m</strong></div>
-            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
           </article>
           <article class="product-card" data-category="bosh" data-name="Bordo shapkasi">
             <span class="tag">Yangi</span><button class="wish" type="button" aria-label="Bordo shapkani sevimlilarga qo‘shish">♡</button>
             <div class="product-image category-image c1" role="img" aria-label="Bordo rangli to‘qima bosh kiyim"></div>
             <div class="product-info"><div><h3>Bordo shapkasi</h3><p>Yumshoq trikotaj · Uniseks</p></div><strong>149 000 so‘m</strong></div>
-            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
           </article>
           <article class="product-card" data-category="ichki" data-name="Oq ichki futbolka">
             <button class="wish" type="button" aria-label="Oq ichki futbolkani sevimlilarga qo‘shish">♡</button>
             <div class="product-image category-image c2" role="img" aria-label="Oq paxtali ichki futbolka"></div>
             <div class="product-info"><div><h3>Oq ichki futbolka</h3><p>100% paxta · Nafas oluvchi</p></div><strong>119 000 so‘m</strong></div>
-            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
           </article>
           <article class="product-card" data-category="oyoq" data-name="Bordo krossovka">
             <span class="tag blue">Top</span><button class="wish" type="button" aria-label="Bordo krossovkani sevimlilarga qo‘shish">♡</button>
             <div class="product-image category-image c3" role="img" aria-label="Qora va bordo rangli krossovka"></div>
             <div class="product-info"><div><h3>Bordo krossovka</h3><p>Yengil taglik · Kundalik</p></div><strong>499 000 so‘m</strong></div>
-            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
           </article>
           <article class="product-card" data-category="pastki" data-name="Klassik keng shim">
             <button class="wish" type="button" aria-label="Klassik keng shimni sevimlilarga qo‘shish">♡</button>
             <div class="product-image category-image c4" role="img" aria-label="To‘q kulrang klassik keng shim"></div>
             <div class="product-info"><div><h3>Klassik keng shim</h3><p>Yumshoq mato · Erkin bichim</p></div><strong>379 000 so‘m</strong></div>
-            <button class="add-btn" type="button">Savatga qo‘shish <span>＋</span></button>
           </article>
         </div>
         <p class="empty-state" hidden>Bu bo‘limda mahsulot topilmadi.</p>
@@ -197,7 +191,6 @@
       <p>© 2026 Robiya Shop</p>
     </footer>
 
-    <div class="toast" role="status" aria-live="polite">Mahsulot savatga qo‘shildi</div>
     <script src="script.js"></script>
   </body>
 </html>

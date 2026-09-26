@@ -17,7 +17,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
   const form = await request.formData();
   const price = Number(form.get('price'));
-  if (!Number.isInteger(price) || price <= 0 || price > 1_000_000_000) {
+  if (!Number.isSafeInteger(price) || price <= 0) {
     return NextResponse.json({ error: 'Narx noto‘g‘ri kiritildi.' }, { status: 400 });
   }
 
@@ -36,7 +36,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         bytes = excluded.bytes,
         content_type = excluded.content_type,
         updated_at = excluded.updated_at
-    `).bind(id, new Uint8Array(await image.arrayBuffer()), image.type, Date.now()).run();
+    `).bind(id, await image.arrayBuffer(), image.type, Date.now()).run();
   }
 
   if (customProduct) {
@@ -55,4 +55,19 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
   const product = (await getProducts()).find((item) => item.id === id);
   return NextResponse.json(product, { headers: { 'Cache-Control': 'no-store' } });
+}
+
+export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
+  if (!(await isAdminRequest())) return NextResponse.json({ error: 'Ruxsat berilmadi.' }, { status: 403 });
+  const { id } = await context.params;
+  const customProduct = await env.DB.prepare('SELECT id FROM custom_products WHERE id = ?').bind(id).first<{ id: string }>();
+  if (!customProduct) return NextResponse.json({ error: 'Mahsulot topilmadi yoki uni o‘chirib bo‘lmaydi.' }, { status: 404 });
+
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM product_images WHERE id = ?').bind(id),
+    env.DB.prepare('DELETE FROM product_overrides WHERE id = ?').bind(id),
+    env.DB.prepare('DELETE FROM custom_products WHERE id = ?').bind(id),
+  ]);
+
+  return NextResponse.json({ success: true }, { headers: { 'Cache-Control': 'no-store' } });
 }
