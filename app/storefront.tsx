@@ -5,12 +5,34 @@ import { ArrowUpRight, Heart, Menu, Search, X } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import { formatPrice } from '@/lib/products';
 
-const filters = [
-  ['all', 'Barchasi'], ['ustki', 'Ustki kiyim'], ['kundalik', 'Kundalik'],
-  ['bosh', 'Bosh kiyim'], ['ichki', 'Ichki kiyim'], ['oyoq', 'Oyoq kiyim'], ['pastki', 'Pastki kiyim'],
-  ['koylak', 'Ko‘ylaklar'], ['sport', 'Sport kiyim'], ['uy', 'Uy kiyimi'],
-  ['aksessuar', 'Aksessuarlar'], ['sumka', 'Sumkalar'],
-];
+const mainCategories = [
+  ['all', 'Barchasi'],
+  ['women', 'Ayollar'],
+  ['men', 'Erkaklar'],
+  ['children', 'Bolalar'],
+  ['accessories', 'Aksessuarlar'],
+] as const;
+
+const subcategories = {
+  women: [
+    ['koylak', 'Ko‘ylaklar'], ['ustki', 'Ustki kiyim'], ['kundalik', 'Kundalik kiyim'],
+    ['pastki', 'Shim va yubkalar'], ['ichki', 'Ichki kiyim'], ['sport', 'Sport kiyim'],
+    ['uy', 'Uy kiyimi'], ['oyoq', 'Oyoq kiyim'],
+  ],
+  men: [
+    ['ustki', 'Ustki kiyim'], ['kundalik', 'Kundalik kiyim'], ['pastki', 'Shimlar'],
+    ['ichki', 'Ichki kiyim'], ['sport', 'Sport kiyim'], ['uy', 'Uy kiyimi'],
+    ['oyoq', 'Oyoq kiyim'], ['bosh', 'Bosh kiyim'],
+  ],
+  children: [
+    ['ustki', 'Ustki kiyim'], ['kundalik', 'Kundalik kiyim'], ['koylak', 'Ko‘ylaklar'],
+    ['pastki', 'Shim va yubkalar'], ['sport', 'Sport kiyim'], ['uy', 'Uy kiyimi'],
+    ['oyoq', 'Oyoq kiyim'], ['bosh', 'Bosh kiyim'],
+  ],
+} as const;
+
+type MainCategory = typeof mainCategories[number][0];
+type ExpandableCategory = keyof typeof subcategories;
 const FAVORITES_STORAGE_KEY = 'robiya-shop-favorites';
 const SELLER_TELEGRAM = 'Nadira_KamBaRoVa';
 const STORE_ORIGIN = 'https://robiya-shop.robiya.workers.dev';
@@ -26,6 +48,7 @@ function getTelegramOrderUrl(product: Product) {
 
 export default function Storefront({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState(initialProducts);
+  const [mainCategory, setMainCategory] = useState<MainCategory>('all');
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -68,10 +91,17 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
   const visibleProducts = useMemo(() => {
     const query = search.toLocaleLowerCase('uz');
     return products.filter((product) =>
-      (filter === 'all' || product.category === filter) &&
+      (filter === 'all' || (filter === 'accessories'
+        ? product.category === 'aksessuar' || product.category === 'sumka'
+        : product.category === filter)) &&
       product.name.toLocaleLowerCase('uz').includes(query),
     );
   }, [products, filter, search]);
+
+  function selectMainCategory(category: MainCategory) {
+    setMainCategory(category);
+    setFilter(category === 'accessories' ? 'accessories' : 'all');
+  }
 
   function toggleWish(id: string) {
     setWished((current) => {
@@ -133,8 +163,18 @@ export default function Storefront({ initialProducts }: { initialProducts: Produ
         <section className="products-section" id="new">
           <div className="section-heading">
             <div><p className="eyebrow dark"><span /> Robiya katalogi</p><h2>Barcha bo‘limlar</h2></div>
-            <div className="filters" role="group" aria-label="Mahsulot turi">
-              {filters.map(([value, label]) => <button key={value} className={filter === value ? 'active' : ''} aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}</button>)}
+            <div className="category-navigation">
+              <div className="filters main-filters" role="group" aria-label="Asosiy kategoriyalar">
+                {mainCategories.map(([value, label]) => {
+                  const expandable = value === 'women' || value === 'men' || value === 'children';
+                  return <button key={value} className={mainCategory === value ? 'active' : ''} aria-pressed={mainCategory === value} aria-expanded={expandable ? mainCategory === value : undefined} onClick={() => selectMainCategory(value)}>{label}</button>;
+                })}
+              </div>
+              {(mainCategory === 'women' || mainCategory === 'men' || mainCategory === 'children') && (
+                <div className="filters subfilters" role="group" aria-label={`${mainCategories.find(([value]) => value === mainCategory)?.[1]} ichki kategoriyalari`}>
+                  {subcategories[mainCategory as ExpandableCategory].map(([value, label]) => <button key={value} className={filter === value ? 'active' : ''} aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}</button>)}
+                </div>
+              )}
             </div>
           </div>
           <div className="product-grid" id="product-grid">

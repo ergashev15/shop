@@ -59,9 +59,13 @@ h1 em, .collection h2 em { font-style: normal; color: transparent; -webkit-text-
 .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; margin-bottom: 42px; }
 .eyebrow.dark { color: var(--muted); margin-bottom: 15px; }
 .section-heading h2 { font: 600 clamp(3rem, 4.8vw, 5.3rem)/.9 "Cormorant Garamond", serif; letter-spacing: -.05em; margin: 0; }
+.category-navigation { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; max-width: min(760px, 65vw); }
 .filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .filters button { min-height: 44px; border: 1px solid #c9ccd3; border-radius: 30px; background: transparent; padding: 9px 17px; cursor: pointer; transition: background-color .2s, border-color .2s, color .2s; font-size: .86rem; }
 .filters button:hover, .filters button.active { background: var(--blue); color: white; border-color: var(--blue); }
+.subfilters { padding-top: 12px; border-top: 1px solid var(--line); animation: reveal-filters .2s ease-out; }
+.subfilters button { min-height: 38px; padding: 7px 14px; border-color: transparent; background: #eee7e8; font-size: .78rem; }
+@keyframes reveal-filters { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
 .product-card { min-width: 0; position: relative; }
 .product-card.hidden { display: none; }
@@ -163,9 +167,11 @@ footer > div > p a { color: #c8c0c3; }
   .benefit-strip { justify-content: flex-start; gap: 18px; overflow-x: auto; padding-inline: 18px; scrollbar-width: none; }
   .benefit-strip::-webkit-scrollbar { display: none; }
   .section-heading { align-items: flex-start; flex-direction: column; }
+  .category-navigation { width: 100%; max-width: none; align-items: flex-start; }
   .filters { width: calc(100vw - 36px); justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; padding: 3px; margin-left: -3px; scrollbar-width: none; }
   .filters::-webkit-scrollbar { display: none; }
   .filters button { flex: 0 0 auto; font-size: .8rem; padding: 9px 13px; }
+  .subfilters { padding-top: 12px; }
   .products-section { padding-inline: 18px; }
   .product-grid { gap: 10px; row-gap: 36px; }
   .product-image { aspect-ratio: .72; }
